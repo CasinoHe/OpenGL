@@ -9,3 +9,9 @@ set(SRC_FILES
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
+
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} glfw opengl32)
+else ()
+    target_link_libraries(${PROJECT_NAME} glfw GL X11 pthread Xrandr Xi dl)
+endif (WIN32)

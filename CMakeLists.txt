@@ -9,3 +9,5 @@ set(OPENGL_ROOT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 add_subdirectory(${OPENGL_ROOT_DIRECTORY}/glfw)
 add_subdirectory(${OPENGL_ROOT_DIRECTORY}/learn/StartWindow)
+
+include_directories(${OPENGL_ROOT_DIRECTORY}/glfw/include)

@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Editor's temporary files
+.vscode
+
+# Compiled temporary directories
+*build

@@ -4,6 +4,7 @@ project(StartWindows)
 
 set(START_WINDOWS_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(SRC_FILES
+    ${GLAD_SRC_FILE}
     ${START_WINDOWS_ROOT_DIR}/main.cpp
 )
 

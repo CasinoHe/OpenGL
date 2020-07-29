@@ -13,3 +13,4 @@ include_directories(${OPENGL_ROOT_DIRECTORY}/glfw/include)
 
 add_subdirectory(${OPENGL_ROOT_DIRECTORY}/glfw)
 add_subdirectory(${OPENGL_ROOT_DIRECTORY}/learn/StartWindow)
+add_subdirectory(${OPENGL_ROOT_DIRECTORY}/learn/Triangle)

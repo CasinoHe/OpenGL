@@ -78,11 +78,13 @@ void ui_thread()
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   glBindVertexArray(0);
 
-  const char *vertex_shader_source = "#version 330 core \n \
-  layout (location=0) in vec3 pos; \n \
-  void main() \n \
+  const char *vertex_shader_source = "#version 330 core \n\
+  layout (location=0) in vec3 pos; \n\
+  out vec4 vertex_color; \n\
+  void main() \n\
   { \n \
-    gl_Position = vec4(pos.x, pos.y, pos.z, 1.0); \n \
+    gl_Position = vec4(pos.x, pos.y, pos.z, 1.0); \n\
+    vertex_color = vec4(0.1, 0.0, 1.0, 1.0); \n\
   }";
 
   unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -91,9 +93,13 @@ void ui_thread()
 
   const char *fragment_shader_soure = "#version 330 core \n\
   out vec4 FragColor; \n\
+  in vec4 vertex_color; \n\
+  uniform vec4 our_color;\n\
   void main() \n\
   {\n\
-    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f); \n\
+    // FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f); \n\
+    // FragColor = vertex_color; \n\
+    FragColor = our_color; \n\
   }";
 
   unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -114,6 +120,11 @@ void ui_thread()
     glfwSwapBuffers(window);
 
     glUseProgram(program);
+    float time_value = static_cast<float>(glfwGetTime());
+    float green_value = static_cast<float>(sin(time_value) / 2.0f + 0.5);
+    int vertex_location = glGetUniformLocation(program, "our_color");
+    glUniform4f(vertex_location, 0.0f, green_value, 0.0f, 1.0f);
+
     glBindVertexArray(VAO);
     // glDrawArrays(GL_TRIANGLES, 0, 6);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

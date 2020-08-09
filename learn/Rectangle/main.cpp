@@ -1,6 +1,10 @@
 #include <iostream>
 #include <thread>
 #include <memory>
+#include <string>
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
@@ -48,6 +52,29 @@ void process_input(GLFWwindow *window)
   }
 }
 
+std::string get_shader_source(std::string &path)
+{
+  if (!std::filesystem::exists(path))
+  {
+    std::cout << "Cannot find shader source file " << path << std::endl;
+    return std::string("");
+  }
+
+  std::ifstream ifs;
+  ifs.open(path, std::ios::in);
+  if (!ifs.is_open())
+  { 
+    std::cout << "Cannot open shader file " << path << std::endl;
+    return std::string("");
+  }
+
+  std::stringstream shader_stream;
+  shader_stream << ifs.rdbuf();
+  ifs.close();
+
+  return shader_stream.str();
+}
+
 void ui_thread()
 {
   init_glfw();
@@ -78,33 +105,30 @@ void ui_thread()
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   glBindVertexArray(0);
 
-  const char *vertex_shader_source = "#version 330 core \n\
-  layout (location=0) in vec3 pos; \n\
-  out vec4 vertex_color; \n\
-  void main() \n\
-  { \n \
-    gl_Position = vec4(pos.x, pos.y, pos.z, 1.0); \n\
-    vertex_color = vec4(0.1, 0.0, 1.0, 1.0); \n\
-  }";
+  std::string vertex_shader_source(get_shader_source(std::string("vertex_shader.glsl")));
+  const char *p_source = &vertex_shader_source[0];
 
   unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
+  glShaderSource(vertex_shader, 1, &p_source, NULL);
   glCompileShader(vertex_shader);
 
-  const char *fragment_shader_soure = "#version 330 core \n\
-  out vec4 FragColor; \n\
-  in vec4 vertex_color; \n\
-  uniform vec4 our_color;\n\
-  void main() \n\
-  {\n\
-    // FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f); \n\
-    // FragColor = vertex_color; \n\
-    FragColor = our_color; \n\
-  }";
+  int success;
+  char err_log[512];
+  glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+  if (!success)
+  { 
+    glGetShaderInfoLog(vertex_shader, 512, NULL, err_log);
+    std::cout << "Compile vertex shader error: " << err_log << std::endl;
+    return;
+  }
+
+  std::string fragment_shader_source(get_shader_source(std::string("fragment_shader.glsl")));
+  p_source = &fragment_shader_source[0];
 
   unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment_shader, 1, &fragment_shader_soure, NULL);
+  glShaderSource(fragment_shader, 1, &p_source, NULL);
   glCompileShader(fragment_shader);
+
 
   unsigned int program = glCreateProgram();
   glAttachShader(program, vertex_shader);
@@ -120,10 +144,10 @@ void ui_thread()
     glfwSwapBuffers(window);
 
     glUseProgram(program);
-    float time_value = static_cast<float>(glfwGetTime());
-    float green_value = static_cast<float>(sin(time_value) / 2.0f + 0.5);
-    int vertex_location = glGetUniformLocation(program, "our_color");
-    glUniform4f(vertex_location, 0.0f, green_value, 0.0f, 1.0f);
+    // float time_value = static_cast<float>(glfwGetTime());
+    // float green_value = static_cast<float>(sin(time_value) / 2.0f + 0.5);
+    // int vertex_location = glGetUniformLocation(program, "our_color");
+    // glUniform4f(vertex_location, 0.0f, green_value, 0.0f, 1.0f);
 
     glBindVertexArray(VAO);
     // glDrawArrays(GL_TRIANGLES, 0, 6);

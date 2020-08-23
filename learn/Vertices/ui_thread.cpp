@@ -89,13 +89,20 @@ void ui_thread()
 
   while(!glfwWindowShouldClose(window))
   {
-    glfwPollEvents();
-    glfwSwapBuffers(window);
+    int color_pos = glGetUniformLocation(program, "change_color");
+    double time_value = glfwGetTime();
+    float factor = static_cast<float>(sin(time_value) / 2.0f + 0.5f);
+    std::cout << "factor: " << factor << std::endl;;
+
     glUseProgram(program);
+    glUniform4f(color_pos, factor, factor, factor, 0.0f);
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+
+    glfwPollEvents();
+    glfwSwapBuffers(window);
   }
 
   glfwTerminate();

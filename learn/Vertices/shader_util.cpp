@@ -42,6 +42,7 @@ namespace Shaders
   {
     if (!std::filesystem::exists(filepath))
     {
+      std::cerr << "- Fatal - Cannot find vertex shader path: " << filepath << std::endl;
       return false;
     }
     else
@@ -55,6 +56,7 @@ namespace Shaders
   {
     if (!std::filesystem::exists(filepath))
     {
+      std::cerr << "- Fatal - Cannot find fragment shader path: " << filepath << std::endl;
       return false;
     }
     else
@@ -141,7 +143,7 @@ namespace Shaders
     }
   }
 
-  inline unsigned int CShaderProgram::get_program_id()
+  unsigned int CShaderProgram::get_program_id()
   {
     return m_program_id;
   }
